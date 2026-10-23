@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080612">
+<title>ASTRAL · 星轨塔罗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080612;--gold:#d9bd7b;--gold2:#fff0c5;--purple:#b5a0f4;--muted:#aaa0bd;--line:#d9bd7b38;--white:#f7f0ff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--white);font-family:"Noto Serif SC",serif;overflow-x:hidden}
+button,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,textarea:focus-visible{outline:2px solid var(--gold2);outline-offset:4px}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:-3;pointer-events:none}
+.nebula{position:fixed;inset:-20%;z-index:-2;pointer-events:none;background:radial-gradient(ellipse at 15% 20%,#542c7255,transparent 40%),radial-gradient(ellipse at 85% 40%,#252b7755,transparent 40%),radial-gradient(ellipse at 50% 100%,#7d315033,transparent 40%);filter:blur(25px);animation:nebula 20s ease-in-out infinite alternate}
+@keyframes nebula{to{transform:translate(2%,-2%) scale(1.08);filter:blur(32px) hue-rotate(20deg)}}
+header{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 5%;border-bottom:1px solid #ffffff12;background:#080612d9;backdrop-filter:blur(20px)}
+.logo{font:600 24px "Cormorant Garamond",serif;letter-spacing:5px;color:var(--gold2)}
+.logo small{display:block;font:10px "Noto Serif SC",serif;letter-spacing:2px;color:var(--muted)}
+nav{display:flex;gap:5px;flex-wrap:wrap}
+nav button,.ghost{background:transparent;color:var(--muted);border:1px solid transparent;border-radius:25px;padding:9px 13px;font-size:12px;transition:.25s}
+nav button:hover,nav button.active,.ghost:hover{border-color:var(--line);color:var(--gold2);background:#d9bd7b0b}
+main{width:min(1100px,92%);margin:auto}
+.hero{text-align:center;padding:65px 10px 40px}
+.orbit{height:120px;width:145px;margin:auto;display:grid;place-items:center;position:relative}
+.orbit:before,.orbit:after{content:"";position:absolute;inset:5px;border:1px solid #d9bd7b66;border-radius:50%;animation:spin 16s linear infinite}
+.orbit:after{inset:0 25px;border-color:#b5a0f488;transform:rotateX(65deg);animation-duration:8s}
+.orbit span{font-size:46px;color:var(--gold2);text-shadow:0 0 30px #d9bd7b;animation:float 4s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{50%{transform:translateY(-7px) scale(1.06)}}
+.eyebrow{font-size:10px;letter-spacing:5px;color:var(--gold)}
+h1{font:400 clamp(44px,8vw,82px)/1.2 "Cormorant Garamond",serif;letter-spacing:6px;margin:12px 0;background:linear-gradient(100deg,#fff5d5,#c9aaff,#e6c77f,#fff4d7);background-size:200%;color:transparent;background-clip:text;animation:shine 8s linear infinite}
+@keyframes shine{to{background-position:200%}}
+.subtitle{font-size:12px;color:var(--muted);line-height:2;max-width:620px;margin:auto}
+.section{padding:25px 0 50px;scroll-margin-top:85px}
+.heading{text-align:center;margin-bottom:25px}
+.heading h2{font-size:22px;font-weight:400;letter-spacing:3px;margin:0 0 12px}
+.heading p{font-size:12px;color:var(--muted);line-height:1.9}
+.panel{background:linear-gradient(145deg,#19132aee,#0f0c1dee);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,4vw,34px);box-shadow:0 25px 80px #0005;position:relative;overflow:hidden}
+.panel:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 20%,#fff2 21%,transparent 22%);opacity:.3}
+label{display:block;color:var(--gold2);font-size:12px;margin:16px 0 10px}
+textarea{width:100%;min-height:85px;resize:vertical;background:#090713;border:1px solid #ffffff20;border-radius:12px;padding:14px;color:white;line-height:1.8}
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}
+.theme{position:relative;overflow:hidden;background:#ffffff04;border:1px solid #ffffff20;border-radius:13px;padding:14px 5px;color:var(--muted);transition:.3s}
+.theme span{display:block;font-size:24px;margin-bottom:7px}
+.theme strong{font-size:12px;font-weight:400}
+.theme:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent,#fff3,transparent);transform:translateX(-130%);transition:.6s}
+.theme:hover:after{transform:translateX(130%)}
+.theme:hover,.theme.selected{color:var(--gold2);border-color:var(--gold);background:#d9bd7b12;transform:translateY(-3px);box-shadow:0 8px 25px #d9bd7b12}
+.pill-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0}
+.pill{border:1px solid #ffffff20;border-radius:30px;padding:10px 15px;background:transparent;color:var(--muted);font-size:12px;transition:.2s}
+.pill.selected,.pill:hover{border-color:var(--gold);color:var(--gold2);background:#d9bd7b0c}
+.center{text-align:center;margin-top:22px}
+.primary{position:relative;overflow:hidden;border:1px solid #f5dfa7;background:linear-gradient(110deg,#c4a05b,#f6e2b0,#c6a25e);background-size:200%;color:#1b1425;padding:14px 25px;border-radius:50px;letter-spacing:1px;font-weight:600;transition:.3s;box-shadow:0 0 25px #d9bd7b18}
+.primary:after{content:"";position:absolute;inset:-50%;background:linear-gradient(100deg,transparent 42%,#fff9 50%,transparent 58%);transform:translateX(-100%) rotate(12deg);transition:transform .8s}
+.primary:hover:after{transform:translateX(100%) rotate(12deg)}
+.primary:hover{transform:translateY(-3px);box-shadow:0 0 35px #d9bd7b44}
+.primary:disabled{opacity:.5;cursor:wait}
+.hint{font-size:11px;color:var(--muted);line-height:1.9;margin-top:13px}
+.reading{display:none}
+.reading.show{display:block;animation:enter .8s both}
+@keyframes enter{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.stage{position:relative;min-height:240px;overflow:hidden;border:1px solid #d9bd7b22;border-radius:18px;margin:25px 0;background:radial-gradient(ellipse at center,#3c245a66,transparent 70%)}
+.stage-status{text-align:center;position:relative;z-index:2;padding:25px 10px;font-size:12px;letter-spacing:2px;color:var(--gold2)}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,3vw,25px);max-width:780px;margin:10px auto 30px;perspective:1400px}
+.slot{text-align:center;min-width:0;animation:slotIn .7s both}
+.slot:nth-child(2){animation-delay:.12s}.slot:nth-child(3){animation-delay:.24s}
+@keyframes slotIn{from{opacity:0;transform:translateY(35px) scale(.9)}to{opacity:1;transform:none}}
+.slot-label{font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:12px}
+.card{position:relative;width:100%;max-width:200px;aspect-ratio:2/3.2;margin:auto;transform-style:preserve-3d;transition:transform .95s cubic-bezier(.2,.8,.15,1);filter:drop-shadow(0 15px 18px #0007);cursor:pointer}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;overflow:hidden}
+.back{border:1px solid var(--gold);background:linear-gradient(145deg,#291b43,#0b1025 65%,#201335);display:grid;place-items:center;box-shadow:inset 0 0 0 4px #0b0918,inset 0 0 0 5px #d9bd7b66}
+.back:before{content:"";position:absolute;inset:7%;border:1px solid #d9bd7b88;background:repeating-conic-gradient(transparent 0deg 11deg,#d9bd7b12 12deg 13deg)}
+.back:after{content:"";position:absolute;inset:-80%;background:linear-gradient(110deg,transparent 44%,#fff2 49%,#fff6 50%,#fff2 51%,transparent 56%);transform:translateX(-70%) rotate(20deg);transition:1s}
+.card:hover:not(.flipped) .back:after{transform:translateX(70%) rotate(20deg)}
+.emblem{font-size:clamp(38px,7vw,65px);z-index:1;color:var(--gold2);text-shadow:0 0 25px #d9bd7b;animation:float 4s infinite}
+.back-label{position:absolute;bottom:12%;z-index:1;font:10px "Cormorant Garamond",serif;letter-spacing:3px;color:#e6d1a0}
+.card.flipped{transform:rotateY(180deg)}
+.card.reversed.flipped{transform:rotateY(180deg) rotateZ(180deg)}
+.front{transform:rotateY(180deg);padding:6%;background:linear-gradient(155deg,#f5e8c9,#d7bd8b 60%,#a78655);color:#24172e;border:2px solid #fff0c5}
+.frame{height:100%;border:1px solid #72562f;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:8% 4%;text-align:center;position:relative}
+.frame:after{content:"";position:absolute;inset:5%;border:1px solid #72562f44;pointer-events:none}
+.num{font:12px "Cormorant Garamond",serif;letter-spacing:3px}
+.symbol{font-size:clamp(35px,6vw,60px);line-height:1.2;animation:float 5s ease-in-out infinite}
+.card-name{font-size:clamp(10px,2vw,16px);font-weight:600}
+.card-en{font:12px "Cormorant Garamond",serif}
+.status{font-size:9px}
+.caption{font-size:12px;color:#f5e9cf;margin:13px 0 5px}
+.keywords{font-size:10px;color:var(--muted);line-height:1.8}
+.card.flipped .front{animation:glow 1s ease-out}
+@keyframes glow{35%{box-shadow:0 0 30px #fff9,0 0 60px #d9bd7b88}}
+.report-title{text-align:center;font-size:24px;font-weight:400;margin:35px 0 8px}
+.report-sub{text-align:center;color:var(--muted);font-size:12px;line-height:1.9}
+.report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:24px}
+.report-card{border:1px solid #ffffff16;background:#ffffff04;border-radius:15px;padding:20px;animation:enter .7s both}
+.report-card h3{font-size:14px;color:var(--gold2);font-weight:400;margin:0 0 12px}
+.report-card p{font-size:12px;line-height:2;color:#c5bdd2;margin:0;white-space:pre-line}
+.report-card.wide{grid-column:1/-1}
+.advice{border-left:2px solid var(--gold);padding-left:15px;color:#f0dfb9!important}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:25px 0}
+.daily-card{display:grid;grid-template-columns:150px 1fr;gap:25px;align-items:center}
+.daily-visual{aspect-ratio:2/3;border:1px solid var(--gold);border-radius:8px;background:linear-gradient(145deg,#2a1b43,#0c1027);display:grid;place-items:center;position:relative}
+.daily-visual:before{content:"";position:absolute;inset:7%;border:1px solid #d9bd7b88}
+.daily-symbol{font-size:65px;color:var(--gold2);text-shadow:0 0 30px #d9bd7b;animation:float 4s infinite}
+.daily-info h3{font-size:24px;font-weight:400;color:var(--gold2)}
+.daily-info p{font-size:12px;line-height:2;color:#c5bdd2}
+.history-list{display:grid;gap:10px}
+.history-item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #ffffff16;border-radius:13px;padding:15px;background:#ffffff04}
+.history-item strong{font-size:13px;font-weight:400}
+.history-item small{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.history-item button{border:1px solid #ffffff20;background:transparent;color:var(--muted);border-radius:20px;padding:7px 12px;font-size:11px}
+footer{text-align:center;padding:35px 15px 55px;color:#766d88;font-size:10px;letter-spacing:1px;line-height:2}
+.toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,20px);background:#211934;border:1px solid var(--line);padding:12px 20px;border-radius:30px;color:var(--gold2);font-size:12px;opacity:0;pointer-events:none;transition:.3s;z-index:80}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+#sound{position:fixed;right:16px;bottom:16px;z-index:40;width:45px;height:45px;border:1px solid var(--line);border-radius:50%;background:#151025e8;color:var(--gold2);font-size:18px;box-shadow:0 5px 25px #0005}
+#flash{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;background:radial-gradient(circle,#fff8,#e8caff33 15%,transparent 55%)}
+#flash.burst{animation:burst .8s ease-out}
+@keyframes burst{20%{opacity:.8}100%{opacity:0;transform:scale(1.5)}}
+.ripple{position:fixed;z-index:60;pointer-events:none;border:1px solid #f5dfaa;border-radius:50%;width:12px;height:12px;transform:translate(-50%,-50%);animation:ripple .65s ease-out forwards}
+@keyframes ripple{to{width:100px;height:100px;opacity:0;border-width:0}}
+.fly{position:absolute;left:50%;top:55%;width:52px;height:85px;margin:-42px 0 0 -26px;border:1px solid var(--gold);border-radius:5px;background:radial-gradient(circle,#493066,#151027 70%);box-shadow:0 0 22px #bda0ff30,inset 0 0 0 4px #0b0918;z-index:5}
+.fly:before{content:"✧";position:absolute;inset:0;display:grid;place-items:center;font-size:25px;color:var(--gold2)}
+@media(max-width:700px){header{padding:12px 4%;align-items:flex-start}.logo{font-size:19px;letter-spacing:3px}nav button{padding:8px;font-size:11px}.theme-grid{grid-template-columns:repeat(3,1fr)}.report-grid{grid-template-columns:1fr}.report-card.wide{grid-column:auto}.daily-card{grid-template-columns:100px 1fr;gap:15px}.daily-symbol{font-size:48px}}
+@media(max-width:420px){nav{max-width:200px}.cards{gap:5px}.card{max-width:115px}.symbol{font-size:32px}.card-name{font-size:10px}.card-en{font-size:9px}.num{font-size:9px}.status{font-size:8px}.slot-label{font-size:9px}.daily-card{grid-template-columns:85px 1fr}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas><div class="nebula"></div>
+<header>
+ <div class="logo">ASTRAL<small>星轨塔罗 · THE COSMIC ARCANA</small></div>
+ <nav>
+  <button class="active" data-go="oracle">开始占卜</button>
+  <button data-go="daily">每日一牌</button>
+  <button data-go="history">占卜记录</button>
+ </nav>
+</header>
+<main>
+<section class="hero">
+ <div class="orbit"><span>✧</span></div>
+ <div class="eyebrow">THE UNIVERSE IS LISTENING</div>
+ <h1>星轨塔罗</h1>
+ <p class="subtitle">在星辰与象征之间，留一点安静给自己。<br>想清楚你的问题，洗牌，然后让三张牌讲述一个故事。</p>
+</section>
+<section class="section" id="oracle">
+ <div class="heading"><h2>开启你的牌阵</h2><p>专注于此刻真正想问的问题。塔罗适合用作自我探索，不是确定未来的科学预测。</p></div>
+ <div class="panel">
+  <label for="question">✦ 你的问题（可选）</label>
+  <textarea id="question" maxlength="500" placeholder="例如：面对最近的变化，我可以如何更好地做决定？"></textarea>
+  <label>✦ 选择探索主题</label>
+  <div class="theme-grid">
+   <button class="theme selected" data-theme="general"><span>✧</span><strong>综合指引</strong></button>
+   <button class="theme" data-theme="love"><span>♡</span><strong>爱情关系</strong></button>
+   <button class="theme" data-theme="study"><span>✦</span><strong>学业成长</strong></button>
+   <button class="theme" data-theme="career"><span>☼</span><strong>事业方向</strong></button>
+   <button class="theme" data-theme="self"><span>☾</span><strong>自我探索</strong></button>
+  </div>
+  <label>✦ 选择牌阵</label>
+  <div class="pill-row">
+   <button class="pill selected" data-spread="three">过去 / 现在 / 可能方向</button>
+   <button class="pill" data-spread="mind">内心 / 阻碍 / 建议</button>
+   <button class="pill" data-spread="choice">现状 / 选项 / 行动</button>
+  </div>
+  <div class="center"><button class="primary" id="startBtn">✧ 洗牌并开启占卜 ✧</button><div class="hint">78 张牌 · 正逆位 · 三张牌阵 · 本地保存记录</div></div>
+ </div>
+</section>
+<section class="section reading" id="result">
+ <div class="heading"><h2>星辰已落于牌面</h2><p>点击未翻开的牌，逐张揭开它们的象征。</p></div>
+ <div class="stage" id="stage"><div class="stage-status" id="stageStatus">正在聆听星轨……</div></div>
+ <div class="cards" id="cards"></div>
+ <h2 class="report-title" id="reportTitle">你的塔罗指引</h2>
+ <p class="report-sub" id="reportSub"></p>
+ <div class="report-grid" id="reportGrid"></div>
+ <div class="actions"><button class="primary" id="againBtn">重新洗牌</button><button class="ghost" id="saveBtn">保存本次记录</button><button class="ghost" id="shareBtn">复制解读摘要</button></div>
+</section>
+<section class="section" id="daily">
+ <div class="heading"><h2>每日一牌</h2><p>抽取一张牌，作为今天的反思主题。</p></div>
+ <div class="panel daily-card">
+  <div class="daily-visual"><span class="daily-symbol" id="dailySymbol">☾</span></div>
+  <div class="daily-info"><div class="eyebrow">YOUR DAILY ARCANA</div><h3 id="dailyName">今日之牌</h3><p id="dailyMeaning">点击按钮，抽取属于今天的象征。</p><button class="primary" id="dailyBtn">抽取今日之牌</button><p class="hint" id="dailyDate"></p></div>
+ </div>
+</section>
+<section class="section" id="history">
+ <div class="heading"><h2>星轨记录</h2><p>记录仅保存在当前浏览器中。</p></div>
+ <div class="panel"><div class="history-list" id="historyList"><p class="hint">还没有保存的占卜记录。</p></div><div class="center"><button class="ghost" id="clearHistory">清除本地历史</button></div></div>
+</section>
+</main>
+<footer>ASTRAL · THE COSMIC ARCANA<br>内容仅供娱乐、灵感与自我反思，不构成专业建议。</footer>
+<div class="toast" id="toast"></div><div id="flash"></div><button id="sound" aria-label="开启或关闭音效" title="开启或关闭提示音">♫</button>
+<script>
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const majors=[
+["愚者","The Fool","☀","新的开始、好奇、勇气","你正站在未知的边缘。允许自己探索，但也要为选择承担责任。"],
+["魔术师","The Magician","✦","行动力、资源、创造","你拥有启动下一步所需的部分资源。把想法转化为具体行动。"],
+["女祭司","The High Priestess","☾","直觉、观察、内在知识","先别急着得出结论。倾听直觉，也用事实验证自己的判断。"],
+["皇后","The Empress","❀","滋养、丰盛、创造","为值得的事物留出时间。成长往往来自稳定的照顾与耐心。"],
+["皇帝","The Emperor","♜","结构、边界、责任","建立清晰的规则与边界，让计划成为可以执行的步骤。"],
+["教皇","The Hierophant","⚝","传统、学习、价值","向可信赖的经验学习，同时判断哪些规则真正适合你。"],
+["恋人","The Lovers","♡","连接、价值、选择","重要的选择需要与你的价值观一致，也需要坦诚沟通。"],
+["战车","The Chariot","➶","专注、决心、方向","把分散的精力集中到一个方向，持续行动比冲动更重要。"],
+["力量","Strength","♧","耐心、温柔、韧性","真正的力量可以是克制、理解和稳定，而不只是强硬。"],
+["隐者","The Hermit","♧","独处、思考、寻找","暂时退一步，给自己安静思考的空间，再决定下一步。"],
+["命运之轮","Wheel of Fortune","◉","变化、周期、机遇","环境会变化。辨认可控的部分，保持弹性并抓住现实机会。"],
+["正义","Justice","⚖","公平、因果、清晰","尽量依据事实与一致的标准判断，并认真考虑行为的后果。"],
+["倒吊人","The Hanged Man","♧","暂停、换位、放下","暂缓推进，尝试从另一个角度理解问题，可能会发现新选项。"],
+["死神","Death","✧","结束、转变、更新","一个阶段的结束也可能腾出空间。辨认哪些旧方式已不再适用。"],
+["节制","Temperance","♧","平衡、整合、耐心","不必走极端。尝试把不同需求整合成可持续的节奏。"],
+["恶魔","The Devil","♢","依赖、诱惑、觉察","留意让你失去选择感的习惯，逐步找回自主决定的空间。"],
+["高塔","The Tower","ϟ","震荡、揭示、重建","当旧假设受到挑战，先稳定自己，再根据新信息重新规划。"],
+["星星","The Star","✧","希望、恢复、信任","给恢复留出时间。小而稳定的进步，也能重新建立信心。"],
+["月亮","The Moon","☾","不确定、想象、潜意识","信息不完整时容易过度猜测。区分事实、感受和推测。"],
+["太阳","The Sun","☼","活力、清晰、喜悦","关注让你感到有能量的事物，也记得看见已经取得的进步。"],
+["审判","Judgement","♧","觉醒、回顾、回应","回顾过去的经验，选择愿意承担的方向，而不是只被旧标签定义。"],
+["世界","The World","◎","完成、整合、新阶段","认可已经完成的部分，并把经验带入下一个阶段。"]
+];
+const suits=[
+{n:"权杖",en:"Wands",sym:["♨","♠","✦","♜","ϟ","☼","➶","♧","✧","♢","♜","♧","♨","♨"],theme:"行动、动力、创造"},
+{n:"圣杯",en:"Cups",sym:["♡","☾","♧","♢","☼","✧","♡","☾","♧","✧","♡","☾","♢","♡"],theme:"情感、关系、感受"},
+{n:"宝剑",en:"Swords",sym:["⚔","✦","☾","ϟ","⚔","♧","⚔","➶","☾","☾","➶","⚖","♧","⚔"],theme:"思想、沟通、判断"},
+{n:"星币",en:"Pentacles",sym:["◎","♢","✧","♧","♜","♢","◎","♧","☼","◎","♢","♜","♧","◎"],theme:"现实、资源、积累"}
+];
+const ranks=["王牌","二","三","四","五","六","七","八","九","十","侍从","骑士","王后","国王"];
+const ranksEn=["Ace","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Page","Knight","Queen","King"];
+const rankMeaning=[
+["起点、潜力、机会","一个新机会正在形成，值得探索，但先确认现实条件。"],
+["平衡、选择、协作","同时面对两种需求时，先厘清优先级并寻找平衡。"],
+["合作、成长、实践","与他人协作、交换反馈，可能帮助计划逐步成形。"],
+["稳定、边界、休整","稳定有价值，但也要确认自己是否因舒适而停滞。"],
+["摩擦、损失、挑战","困难可能带来不适，先识别真正的问题与可获得的支持。"],
+["帮助、分享、回顾","回看已有的进步，也留意互相支持是否保持平衡。"],
+["评估、耐心、投入","持续投入之前，评估当前方法是否值得继续。"],
+["练习、专注、精进","把大目标拆成可以重复练习的小步骤。"],
+["独立、成果、自信","认可自己的努力，也检查目标是否仍符合真实需要。"],
+["完成、负担、阶段","责任可能累积，考虑哪些任务可以调整、分享或结束。"],
+["学习、消息、好奇","以初学者心态收集信息，不急着把第一印象当成答案。"],
+["行动、推动、变化","行动可以带来进展，保持方向感并避免只求速度。"],
+["理解、关怀、直觉","温柔对待自己的感受，同时尊重他人的边界。"],
+["成熟、责任、掌控","以成熟方式管理资源和责任，避免把控制误当成安全。"]
+];
+const themes={
+general:["综合指引","回顾已有经验，找到当下可以采取的一步。","留意目标与现实之间的距离，给自己留出调整空间。","选择一个具体、可执行的行动，并在行动后重新评估。"],
+love:["爱情关系","观察彼此的沟通、边界与实际行动，不只依赖猜测。","把自己的需求表达清楚，也给对方真实回应的空间。","以尊重和诚实为基础，判断这段关系是否让双方都能自在成长。"],
+study:["学业成长","回顾之前的学习方法，找出真正有效的部分。","把注意力放在当前最重要的知识点，避免被焦虑分散。","制定一个小而明确的学习计划，完成后再调整方法。"],
+career:["事业方向","盘点已经具备的技能、资源和现实限制。","比较不同方向的成本、收益与长期适配度。","先做一个低风险的小尝试，用真实反馈帮助决定。"],
+self:["自我探索","给自己的情绪和需要留出被看见的空间。","观察重复出现的想法，区分事实与自我评价。","从一个符合自身价值观的小行动开始，逐渐建立信任。"]
+};
+const spreads={
+three:["过去的影响","当下的状态","可能的方向"],
+mind:["内心的声音","当前的阻碍","值得尝试的建议"],
+choice:["目前的处境","可考虑的选项","下一步行动"]
+};
+let theme="general",spread="three",current=null,busy=false,soundOn=false,audioCtx=null;
+function buildDeck(){
+ const d=majors.map((c,i)=>({name:c[0],en:c[1],symbol:c[2],keywords:c[3],meaning:c[4],num:i,major:true}));
+ suits.forEach(s=>ranks.forEach((r,i)=>d.push({
+  name:s.n+r,en:ranksEn[i]+" of "+s.en,symbol:s.sym[i],
+  keywords:s.theme+"；"+rankMeaning[i][0],
+  meaning:s.theme+"的主题与「"+rankMeaning[i][0]+"」交织在一起。"+rankMeaning[i][1],
+  num:i,major:false
+ })));
+ return d;
+}
+const deck=buildDeck();
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2300)}
+function playChime(freq=660){
+ if(!soundOn)return;
+ try{
+  audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type="sine";o.frequency.value=freq;
+  g.gain.setValueAtTime(.0001,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.04,audioCtx.currentTime+.025);
+  g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+1);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+1.05);
+ }catch(e){}
+}
+function burst(){const f=$("#flash");f.classList.remove("burst");void f.offsetWidth;f.classList.add("burst")}
+function makeCard(c,i,reversed,position){
+ return `<article class="slot">
+  <div class="slot-label">${esc(position)}</div>
+  <div class="card ${reversed?"reversed":""}" data-index="${i}" role="button" tabindex="0" aria-label="揭开${esc(c.name)}">
+   <div class="face back"><span class="emblem">✧</span><span class="back-label">ASTRAL ARCANA</span></div>
+   <div class="face front"><div class="frame">
+    <span class="num">${c.major?String(c.num).padStart(2,"0"):String(c.num+1).padStart(2,"0")}</span>
+    <span class="symbol">${esc(c.symbol)}</span><span class="card-name">${esc(c.name)}</span>
+    <span class="card-en">${esc(c.en)}</span><span class="status">${reversed?"逆位 · REVERSED":"正位 · UPRIGHT"}</span>
+   </div></div>
+  </div>
+  <div class="caption">${esc(c.name)} · ${reversed?"逆位":"正位"}</div>
+  <div class="keywords">${reversed?"反思 · 调整 · 重新理解":esc(c.keywords)}</div>
+ </article>`;
+}
+function draw(){
+ if(busy)return;busy=true;
+ $("#startBtn").disabled=true;$("#againBtn").disabled=true;
+ $("#result").classList.add("show");$("#cards").innerHTML="";
+ $("#reportGrid").innerHTML="";$("#reportSub").textContent="";
+ $("#stageStatus").textContent="✧ 星轨洗牌中 · 正在重组 78 张牌的象征";
+ $("#result").scrollIntoView({behavior:"smooth",block:"start"});
+ const stage=$("#stage");
+ const layer=document.createElement("div");layer.style.cssText="position:absolute;inset:0;overflow:hidden;pointer-events:none";
+ stage.appendChild(layer);
+ const count=innerWidth<600?9:15,nodes=[];
+ for(let i=0;i<count;i++){const el=document.createElement("i");el.className="fly";layer.appendChild(el);nodes.push(el)}
+ if(window.gsap){
+  const tl=gsap.timeline({onComplete:()=>finishDraw(layer)});
+  nodes.forEach((el,i)=>{
+   gsap.set(el,{x:(Math.random()-.5)*30,y:(Math.random()-.5)*30,rotationY:Math.random()*90,rotationZ:(Math.random()-.5)*35,scale:.6+Math.random()*.6,opacity:0});
+   tl.to(el,{opacity:1,duration:.12},i*.035);
+   tl.to(el,{x:(Math.random()-.5)*Math.min(innerWidth*.8,650),y:(Math.random()-.5)*170,rotationY:360+Math.random()*360,rotationZ:(Math.random()-.5)*170,scale:.9,duration:.5,ease:"power2.inOut"},i*.035+.08);
+   tl.to(el,{x:(Math.random()-.5)*100,y:(Math.random()-.5)*45,rotationY:720,rotationZ:0,scale:.5,opacity:0,duration:.3,ease:"power3.in"},1.05+i*.02);
+  });
+ }else{
+  nodes.forEach(el=>{el.style.transition="all .7s ease";el.style.transform=`translate(${(Math.random()-.5)*innerWidth}px,${(Math.random()-.5)*180}px) rotate(250deg)`;el.style.opacity="0"});
+  setTimeout(()=>finishDraw(layer),1200);
+ }
+}
+function finishDraw(layer){
+ layer.remove();busy=false;$("#startBtn").disabled=false;$("#againBtn").disabled=false;
+ const cards=shuffle([...deck]).slice(0,3).map(c=>({...c,reversed:Math.random()<.28,flipped:false}));
+ current={date:new Date().toLocaleString("zh-CN"),question:$("#question").value.trim(),theme,spread,cards};
+ $("#cards").innerHTML=cards.map((c,i)=>makeCard(c,i,c.reversed,spreads[spread][i])).join("");
+ $("#stageStatus").textContent="✧ 牌阵已就位 · 点击卡牌，逐张揭开";
+ $$(".card").forEach(el=>{
+  el.addEventListener("click",()=>flipCard(Number(el.dataset.index)));
+  el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flipCard(Number(el.dataset.index))}});
+ });
+ $("#reportTitle").textContent=themes[theme][0]+" · 你的三张牌";
+ $("#reportSub").textContent=current.question?"你的问题："+current.question:"给自己一点时间，结合现实情况理解这些象征。";
+ renderReport(false);burst();playChime(784);
+}
+function flipCard(i){
+ if(!current||current.cards[i].flipped)return;
+ current.cards[i].flipped=true;
+ const el=document.querySelector(`.card[data-index="${i}"]`);
+ el.classList.add("flipped");el.closest(".slot").animate([{transform:"translateY(12px)",filter:"brightness(1.7)"},{transform:"translateY(0)",filter:"brightness(1)"}],{duration:850,easing:"cubic-bezier(.16,1,.3,1)"});
+ playChime([523,659,784][i]);burst();
+ const n=current.cards.filter(c=>c.flipped).length;
+ $("#stageStatus").textContent=n===3?"✧ 三张牌已全部揭开 · 牌阵完整呈现":`星轨揭示中 · ${n}/3 · ${["第一道启示","第二道启示","最后一道启示"][n-1]}`;
+ renderReport(true);
+}
+function renderReport(revealOnly){
+ const revealed=current.cards.filter(c=>c.flipped);
+ if(revealOnly&&!revealed.length)return;
+ const t=themes[current.theme];
+ const all=current.cards;
+ const sections=revealed.map((c)=>{
+  const msg=c.reversed?"逆位提示你可以换一个角度理解「"+c.name+"」。它不代表坏结果，而是邀请你观察这个主题是否失衡、被忽略，或需要更温和的处理。"+c.meaning:c.meaning;
+  return `<div class="report-card"><h3>${esc(c.name)} · ${c.reversed?"逆位":"正位"}</h3><p><b>关键词：</b>${esc(c.reversed?"反思、调整、内在观察":c.keywords)}\n\n${esc(msg)}</p></div>`;
+ });
+ let extra="";
+ if(revealed.length===3){
+  const summary=`三张牌共同提供了一个反思框架：先看见已经发生的影响，再理解当前的状态，最后选择一项现实可行的行动。牌面不是固定的命运结论，真正重要的是你从中联想到的事实、感受和选择。`;
+  extra=`<div class="report-card wide"><h3>✧ 综合解读</h3><p>${esc(summary)}</p></div>
+  <div class="report-card"><h3>✦ 主题观察</h3><p>${esc(t[1])}\n\n${esc(t[2])}</p></div>
+  <div class="report-card"><h3>☾ 可能的盲点</h3><p>不要把担心直接当成事实，也不必把一次结果看成最终答案。试着列出已知信息、仍不确定的部分，以及你可以进一步确认的问题。</p></div>
+  <div class="report-card wide"><h3>✧ 可以尝试的下一步</h3><p class="advice">${esc(t[3])}\n\n把建议拆成一个今天或本周可以完成的小行动。完成后，依据实际反馈再调整计划。</p></div>`;
+ }
+ $("#reportGrid").innerHTML=sections.join("")+extra;
+}
+function getHistory(){try{return JSON.parse(localStorage.getItem("astral-history")||"[]")}catch{return []}}
+function setHistory(h){try{localStorage.setItem("astral-history",JSON.stringify(h.slice(0,30)))}catch{toast("无法保存记录，请检查浏览器存储权限。")}}
+function saveCurrent(){
+ if(!current){toast("请先完成一次抽牌。");return}
+ const h=getHistory();h.unshift({...current,cards:current.cards.map(c=>({name:c.name,en:c.en,symbol:c.symbol,keywords:c.keywords,meaning:c.meaning,reversed:c.reversed,flipped:c.flipped}))});
+ setHistory(h);renderHistory();toast("本次记录已保存到当前浏览器。");
+}
+function renderHistory(){
+ const h=getHistory(),box=$("#historyList");
+ if(!h.length){box.innerHTML='<p class="hint">还没有保存的占卜记录。</p>';return}
+ box.innerHTML=h.map((r,i)=>`<div class="history-item"><div><strong>${esc(themes[r.theme]?.[0]||"塔罗记录")}</strong><small>${esc(r.date)} · ${(r.cards||[]).map(c=>esc(c.name)+(c.reversed?"（逆）":"")).join("、")}</small></div><button data-delete="${i}">删除</button></div>`).join("");
+ $$("[data-delete]").forEach(b=>b.addEventListener("click",()=>{const a=getHistory();a.splice(Number(b.dataset.delete),1);setHistory(a);renderHistory();toast("已删除这条记录。")}));
+}
+async function shareSummary(){
+ if(!current){toast("请先完成一次抽牌。");return}
+ const text="ASTRAL 星轨塔罗\n主题："+themes[current.theme][0]+"\n问题："+(current.question||"自我探索")+"\n"+current.cards.map((c,i)=>`${spreads[current.spread][i]}：${c.name}（${c.reversed?"逆位":"正位"}）\n${c.meaning}`).join("\n\n");
+ try{await navigator.clipboard.writeText(text);toast("解读摘要已复制。")}
+ catch{const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast("解读摘要已复制。")}
+}
+function dateKey(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`}
+function daily(){
+ const key=dateKey();let data;
+ try{data=JSON.parse(localStorage.getItem("astral-daily")||"null")}catch{}
+ if(!data||data.date!==key){const c=deck[Math.floor(Math.random()*deck.length)];data={date:key,card:c};try{localStorage.setItem("astral-daily",JSON.stringify(data))}catch{}}
+ $("#dailySymbol").textContent=data.card.symbol;$("#dailyName").textContent=data.card.name;
+ $("#dailyMeaning").textContent=data.card.meaning+" 关键词："+data.card.keywords+"。把它当作今天的思考提示，而不是确定预言。";
+ $("#dailyDate").textContent="日期 · "+key;
+}
+function newDaily(){const c=deck[Math.floor(Math.random()*deck.length)];try{localStorage.setItem("astral-daily",JSON.stringify({date:dateKey(),card:c}))}catch{}daily();playChime(659);toast("今日之牌已更新。"}
+$("#startBtn").addEventListener("click",draw);
+$("#againBtn").addEventListener("click",draw);
+$("#saveBtn").addEventListener("click",saveCurrent);
+$("#shareBtn").addEventListener("click",shareSummary);
+$("#dailyBtn").addEventListener("click",newDaily);
+$("#clearHistory").addEventListener("click",()=>{if(confirm("确定清除所有本地占卜记录吗？")){localStorage.removeItem("astral-history");renderHistory();toast("历史记录已清除。")}});
+$$("[data-theme]").forEach(b=>b.addEventListener("click",()=>{theme=b.dataset.theme;$$("[data-theme]").forEach(x=>x.classList.toggle("selected",x===b))}));
+$$("[data-spread]").forEach(b=>b.addEventListener("click",()=>{spread=b.dataset.spread;$$("[data-spread]").forEach(x=>x.classList.toggle("selected",x===b))}));
+$$("[data-go]").forEach(b=>b.addEventListener("click",()=>{document.getElementById(b.dataset.go).scrollIntoView({behavior:"smooth"});$$("[data-go]").forEach(x=>x.classList.toggle("active",x===b))}));
+$("#sound").addEventListener("click",()=>{soundOn=!soundOn;$("#sound").textContent=soundOn?"♫":"♪";if(soundOn)playChime(523);toast(soundOn?"轻柔提示音已开启。":"音效已关闭。")});
+document.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card")){const r=document.createElement("i");r.className="ripple";r.style.left=e.clientX+"px";r.style.top=e.clientY+"px";document.body.appendChild(r);setTimeout(()=>r.remove(),700)}},{passive:true});
+document.addEventListener("pointermove",e=>{document.documentElement.style.setProperty("--cursor-x",e.clientX+"px");document.documentElement.style.setProperty("--cursor-y",e.clientY+"px")},{passive:true});
+/* 星尘与流星 Canvas 动画 */
+const canvas=$("#sky"),ctx=canvas.getContext("2d");let w,h,dpr,stars=[],meteors=[],mouse={x:0,y:0};
+function resize(){
+ dpr=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;
+ canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+"px";canvas.style.height=h+"px";ctx.setTransform(dpr,0,0,dpr,0,0);
+ stars=Array.from({length:Math.min(240,Math.floor(w*h/5000))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+.2,a:Math.random()*.65+.15,s:Math.random()*.012+.003,p:Math.random()*6.28}));
+}
+function animate(t){
+ ctx.clearRect(0,0,w,h);
+ for(const s of stars){ctx.fillStyle=`rgba(238,224,255,${Math.max(.04,s.a+Math.sin(t*s.s+s.p)*.16)})`;ctx.beginPath();ctx.arc(s.x+mouse.x*.008,s.y+mouse.y*.008,s.r,0,Math.PI*2);ctx.fill()}
+ if(Math.random()<.012&&meteors.length<2)meteors.push({x:Math.random()*w*.8,y:Math.random()*h*.35,v:7+Math.random()*7,len:70+Math.random()*100,a:1});
+ meteors=meteors.filter(m=>m.a>0&&m.x<w+150&&m.y<h+150);
+ for(const m of meteors){const g=ctx.createLinearGradient(m.x,m.y,m.x-m.len,m.y-m.len*.45);g.addColorStop(0,`rgba(255,231,174,${m.a})`);g.addColorStop(1,"rgba(255,231,174,0)");ctx.strokeStyle=g;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.len,m.y-m.len*.45);ctx.stroke();m.x+=m.v;m.y+=m.v*.45;m.a-=.012}
+ requestAnimationFrame(animate);
+}
+addEventListener("resize",resize);addEventListener("pointermove",e=>{mouse.x=e.clientX-w/2;mouse.y=e.clientY-h/2},{passive:true});
+resize();requestAnimationFrame(animate);
+renderHistory();daily();
+</script>
+</body>
+</html>
+
